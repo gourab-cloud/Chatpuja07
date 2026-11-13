@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>छठ पूजा</title>
+<meta name="theme-color" content="#161c3d">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#161c3d;font-family:'Cormorant Garamond',Georgia,serif;color:#fff1d2;touch-action:none;-webkit-tap-highlight-color:transparent;user-select:none}
+canvas{display:block;position:fixed;inset:0}
+#cap{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 5vh);text-align:center;padding:0 16px;pointer-events:none;transition:opacity .7s}
+#cap b{display:block;font:400 clamp(1.35rem,5.6vw,2.4rem)/1.4 'Tiro Devanagari Hindi','Noto Serif Devanagari',serif;text-shadow:0 2px 14px rgba(20,10,40,.85),0 0 26px rgba(255,180,90,.5)}
+#cap i{display:block;font-size:clamp(1rem,3.6vw,1.4rem);letter-spacing:.06em;opacity:.92;text-shadow:0 2px 10px rgba(20,10,40,.9)}
+#dots{position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:0;right:0;display:flex;justify-content:center;gap:8px;pointer-events:none}
+#dots span{width:34px;height:3px;padding:12px 0;background:rgba(255,241,210,.4);background-clip:content-box;pointer-events:auto;cursor:pointer;transition:background-color .5s}
+#dots span.on{background-color:#f3cf86}
+#snd{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;width:44px;height:44px;border-radius:50%;border:1px solid rgba(233,200,130,.7);background:rgba(22,28,61,.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);cursor:pointer;display:grid;place-items:center;z-index:6}
+#snd svg{width:22px;height:22px;fill:none;stroke:#f1d28e;stroke-width:1.8;stroke-linecap:round}
+#snd .x{opacity:0}#snd.off .x{opacity:1}
+#rv{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 1.6s;background:radial-gradient(circle,rgba(255,220,150,.12),rgba(12,10,36,.6) 80%);z-index:5;cursor:pointer}
+#rv.on{opacity:1;pointer-events:auto}
+#hp{margin:0;font:italic 500 clamp(2.4rem,11vw,5.4rem)/1.1 'Cormorant Garamond',Georgia,serif;color:#ffe6a8;text-shadow:0 0 30px rgba(255,190,90,.9),0 4px 16px rgba(20,10,40,.7)}
+#hp span{display:inline-block;opacity:0}
+#rv.on #hp span{animation:lt 1.3s both;animation-delay:calc(var(--i)*.08s + .4s)}
+@keyframes lt{from{opacity:0;transform:translateY(26px) scale(1.5);filter:blur(12px)}to{opacity:1;transform:none;filter:none}}
+#rv h2,#rv p,#rv small{opacity:0;margin:.6rem auto;max-width:32rem;font-family:'Tiro Devanagari Hindi','Noto Serif Devanagari',serif;font-weight:400;text-shadow:0 2px 12px rgba(20,10,40,.85)}
+#rv h2{font-size:clamp(1.6rem,6.5vw,2.4rem);color:#f6c978;margin-top:1rem}
+#rv p{font-size:clamp(1.05rem,4.3vw,1.3rem);line-height:1.9}
+#rv .j{font-size:clamp(1.4rem,6vw,2rem);color:#ffd9a0}
+#rv small{font:italic 1rem 'Cormorant Garamond',serif}
+#rv.on h2{animation:fi 1.4s 2s both}#rv.on p{animation:fi 1.4s 2.8s both}#rv.on p+p{animation-delay:3.8s}#rv.on .j{animation:fi 1.4s 4.8s both}#rv.on small{animation:fi 1.4s 6s both}
+@keyframes fi{to{opacity:1}}
+</style>
+</head>
+<body>
+<div id="cap"></div><div id="dots"><span></span><span></span><span></span><span></span></div>
+<button id="snd" aria-label="Mute or unmute music"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/><path class="x" d="M3 3l18 18"/></svg></button>
+<div id="rv"><div><h1 id="hp"></h1><h2>शुभ छठ पूजा</h2><p>छठ पूजा सिर्फ एक त्योहार नहीं, बल्कि आस्था, विश्वास, परिवार और प्रकृति के प्रति सम्मान का प्रतीक है।</p><p>छठी मैया और सूर्य देव सभी के जीवन में सुख, शांति और समृद्धि लाएं।</p><p class="j">जय छठी मैया! 🙏</p><small>Tap to watch again</small></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+if(!window.THREE){document.body.innerHTML='<p style="padding:2rem;font-size:1.2rem">Three.js लोड नहीं हुआ। कृपया इंटरनेट चालू करके पेज दोबारा खोलें।</p>'}else go();
+function go(){
+const T3=THREE,$=i=>document.getElementById(i),R=(a,b)=>a+Math.random()*(b-a),cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v)),S=v=>{v=cl(v);return v*v*(3-2*v)},L=(a,b,k)=>a+(b-a)*k,V=(x=0,y=0,z=0)=>new T3.Vector3(x,y,z);
+const rd=new T3.WebGLRenderer({antialias:true});rd.setPixelRatio(Math.min(devicePixelRatio||1,innerWidth<700?1.5:2));document.body.prepend(rd.domElement);
+const sc=new T3.Scene();sc.fog=new T3.Fog(0xf0a07c,45,170);
+const cam=new T3.PerspectiveCamera(55,1,.1,400);
+const SUN=V(0,3,-70),sunDir=SUN.clone().normalize();
+const tex=(fn,w=128,h=128)=>{const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);return new T3.CanvasTexture(c)};
+const glowT=tex(c=>{const g=c.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.25,'rgba(255,255,255,.45)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,128,128)});
+const glow=(col,s,x,y,z,o=1,p=sc)=>{const m=new T3.Sprite(new T3.SpriteMaterial({map:glowT,color:col,blending:T3.AdditiveBlending,depthWrite:false,transparent:true,opacity:o,fog:false}));m.scale.set(s,s,1);m.position.set(x,y,z);p.add(m);return m};
+const mat=(c,r=.8,e=0)=>new T3.MeshStandardMaterial({color:c,roughness:r,emissive:c,emissiveIntensity:e});
+
+/* sky, rising sun, river */
+sc.add(new T3.Mesh(new T3.SphereGeometry(300,32,16),new T3.ShaderMaterial({side:T3.BackSide,depthWrite:false,uniforms:{sd:{value:sunDir}},
+vertexShader:'varying vec3 d;void main(){d=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+fragmentShader:'varying vec3 d;uniform vec3 sd;void main(){float y=max(d.y,0.);vec3 c=mix(vec3(1.,.74,.5),vec3(.95,.55,.55),smoothstep(0.,.12,y));c=mix(c,vec3(.42,.34,.6),smoothstep(.1,.42,y));c=mix(c,vec3(.12,.16,.36),smoothstep(.38,.9,y));c+=vec3(1.,.65,.35)*pow(max(dot(d,sd),0.),12.)*.6;gl_FragColor=vec4(c,1.);}'})));
+const sunM=new T3.Mesh(new T3.SphereGeometry(7,32,16),new T3.MeshBasicMaterial({color:0xffe2a0,fog:false}));sunM.position.copy(SUN);sc.add(sunM);
+const g1=glow(0xffb060,95,0,3,-72,.9),g2=glow(0xffe0a8,36,0,3,-69,.9);
+const water=new T3.Mesh(new T3.PlaneGeometry(400,300,150,110).rotateX(-Math.PI/2),new T3.ShaderMaterial({uniforms:{t:{value:0},sd:{value:sunDir}},
+vertexShader:'uniform float t;varying vec3 vP;varying vec3 vN;void wave(vec2 d,float k,float a,float s,vec2 p,inout float h,inout vec2 g){float ph=dot(d,p)*k+t*s;h+=a*sin(ph);g+=d*k*a*cos(ph);}void main(){vec2 xz=position.xz;float h=0.;vec2 g=vec2(0.);wave(vec2(.7,.7),.9,.05,1.2,xz,h,g);wave(vec2(-.5,.86),1.7,.03,1.7,xz,h,g);wave(vec2(.2,.98),3.1,.015,2.4,xz,h,g);wave(vec2(-.9,.4),5.3,.008,3.3,xz,h,g);vec3 p=position;p.y+=h;vP=(modelMatrix*vec4(p,1.)).xyz;vN=normalize(vec3(-g.x,1.,-g.y));gl_Position=projectionMatrix*viewMatrix*vec4(vP,1.);}',
+fragmentShader:'uniform vec3 sd;varying vec3 vP;varying vec3 vN;void main(){vec3 V=normalize(cameraPosition-vP),N=normalize(vN),R=reflect(-V,N);float f=pow(1.-max(dot(N,V),0.),3.);vec3 sky=mix(vec3(1.,.66,.42),vec3(.4,.32,.6),sqrt(clamp(R.y,0.,1.)));vec3 c=mix(vec3(.07,.12,.28),sky,.15+.85*f);float d=max(dot(R,sd),0.);c+=vec3(1.,.8,.5)*pow(d,60.)*1.4+vec3(1.,.95,.8)*pow(d,600.)*3.;float fg=1.-exp(-length(cameraPosition-vP)*.012);c=mix(c,vec3(.98,.7,.54),fg*.6);gl_FragColor=vec4(c,1.);}'}));
+water.position.z=-110;sc.add(water);
+sc.add(new T3.HemisphereLight(0xffd2aa,0x2a2a60,1));
+const dl=new T3.DirectionalLight(0xffb878,.9);sc.add(dl);
+const fl=new T3.DirectionalLight(0xffd7c8,.65);fl.position.set(0,6,20);sc.add(fl);
+
+/* bank, ghat, trees, sugarcane */
+const yAt=z=>cl(-.55+(z+1.5)/5.3*1.05,-.55,.5);
+const box=(w,h,d,c,x,y,z)=>{const m=new T3.Mesh(new T3.BoxGeometry(w,h,d),mat(c,.95,.06));m.position.set(x,y,z);sc.add(m);return m};
+box(160,1,40,0xdcb98a,0,0,23.8);box(16,1,1,0xe8d3b0,0,0,0);
+for(let i=0;i<6;i++){const z=3.3-i*.95;box(16,1,1,0xe8d3b0,0,yAt(z)-.48,z)}
+box(320,3,10,0x3b2f5c,0,.5,-68);
+const tree=(x,z,s,c,y=.5)=>{const g=new T3.Group();const t=new T3.Mesh(new T3.CylinderGeometry(.2,.3,2,6),mat(0x4a3322));t.position.y=1;g.add(t);const f=new T3.Mesh(new T3.IcosahedronGeometry(1.6,1),mat(c,.9,.05));f.position.y=3;f.scale.y=1.2;g.add(f);g.position.set(x,y,z);g.scale.setScalar(s);sc.add(g)};
+for(let i=0;i<22;i++)tree(R(-120,120),R(-70,-64),R(2.4,4),0x2a2450,2);
+[[-24,14],[-30,22],[28,12],[34,20],[-16,30],[20,32],[-14,3.8],[15,4]].forEach(p=>tree(p[0],p[1],R(2,2.8),0x35502f));
+[-11,-10.4,10.6,11.2].forEach((x,i)=>{const c=new T3.Mesh(new T3.CylinderGeometry(.06,.07,3,6),mat(0x6f8b43,.8,.1));c.position.set(x,2,4.6);c.rotation.z=i%2?-.1:.12;sc.add(c)});
+
+/* people, built from primitives */
+const FX=innerWidth/innerHeight<.9?.6:1;
+const B=[[-7,6.4],[-4.8,7.8],[-2.6,6.2],[-.4,7.6],[1.8,6.3],[4,7.7],[6.2,6.4],[8.2,7.6]].map(([x,z])=>[x*FX,z]);
+const G=[[-6.5,-2.6],[-4.6,-4.2],[-2.6,-2.4],[-.6,-4.6],[1.4,-2.8],[3.4,-4.2],[5.4,-2.6],[7.4,-4.4]].map(([x,z])=>[x*FX,z]);
+const specs=[{c:0x8a1630,r:'c'},{c:0xe0822e,r:'f'},{c:0xd96a8a,r:'l'},{c:0xf1e4c8,r:'c',m:1},{c:0xb01e2f,r:'f'},{c:0xe9b840,r:'l'},{c:0xa02a6a,r:'c'},{c:0xd8b36a,r:'f',m:1}];
+const matCols=[0xd9b96a,0xb84a3a,0xc99a54,0x7a9a5a];
+function daura(){const t=new T3.Group(),a=(geo,m,x,y,z)=>{const e=new T3.Mesh(geo,m);e.position.set(x,y,z);t.add(e)};
+ a(new T3.CylinderGeometry(.34,.29,.05,20),mat(0xc99a54,.9,.08),0,0,0);
+ [[-.14,.09,.02,.09,0xf28a2e],[.13,.08,.07,.08,0xc8352f],[.02,.08,-.14,.07,0xf4d24a],[.16,.07,-.1,.06,0x8a5a2f]].forEach(f=>a(new T3.SphereGeometry(f[3],10,8),mat(f[4],.6,.15),f[0],f[1],f[2]));
+ for(let k=0;k<8;k++){const q=k/8*6.283;a(new T3.SphereGeometry(.035,6,5),mat(0xf0a020,.7,.3),Math.cos(q)*.26,.04,Math.sin(q)*.26)}
+ a(new T3.CylinderGeometry(.045,.035,.04,8),mat(0xb5602a),-.02,.05,.03);glow(0xffb347,.5,-.02,.14,.03,.95,t);sc.add(t);return t}
+const people=specs.map((o,i)=>{
+ const g=new T3.Group(),body=new T3.Group();g.add(body);
+ const sk=mat(0xc98a63,.6,.12),sa=mat(o.c,.55,.14),bl=mat(o.m?o.c:0x5a0d1f,.6,.1),go=mat(0xe8c56e,.3,.25);
+ const add=(geo,m,x,y,z,p=body)=>{const e=new T3.Mesh(geo,m);e.position.set(x,y,z);p.add(e);return e};
+ let legs=[];
+ if(o.m){add(new T3.CylinderGeometry(.19,.21,.66,14),sa,0,1.3,0);legs=[-1,1].map(s=>{const l=new T3.Group();l.position.set(s*.1,.98,0);g.add(l);add(new T3.CylinderGeometry(.1,.085,.98,10),mat(0xf3ead8,.8,.15),0,-.49,0,l);return l});add(new T3.SphereGeometry(.14,14,10,5.4,4.9,0,1.9),mat(0x18110f),0,1.72,.02)}
+ else{add(new T3.CylinderGeometry(.17,.37,1,18),sa,0,.55,0);add(new T3.CylinderGeometry(.16,.19,.5,14),bl,0,1.28,0);add(new T3.TorusGeometry(.36,.028,6,24),go,0,.1,0).rotation.x=Math.PI/2;add(new T3.BoxGeometry(.36,.95,.03),sa,0,1,.2);[-1,1].forEach(s=>add(new T3.BoxGeometry(.03,.95,.036),go,s*.18,1,.2));add(new T3.SphereGeometry(.155,14,10,5.4,4.9,0,2),sa,0,1.72,.02)}
+ add(new T3.SphereGeometry(.13,16,12),sk,0,1.7,0);
+ [-1,1].forEach(s=>add(new T3.SphereGeometry(.014,6,5),mat(0x1a0f0f,.5),s*.045,1.72,-.118));
+ add(new T3.TorusGeometry(.038,.007,5,10,Math.PI),mat(0x7a2a2a,.5),0,1.675,-.12).rotation.z=Math.PI;
+ const arm=[-1,1].map(s=>{const sh=new T3.Group();sh.position.set(s*.23,1.5,0);body.add(sh);add(new T3.CylinderGeometry(.058,.05,.3,8),bl,0,-.15,0,sh);
+  const el=new T3.Group();el.position.y=-.3;sh.add(el);add(new T3.CylinderGeometry(.045,.038,.4,8),sk,0,-.2,0,el);add(new T3.SphereGeometry(.05,8,6),sk,0,-.42,0,el);
+  [0,1].forEach(k=>add(new T3.TorusGeometry(.044,.008,5,10),go,0,-.3-k*.04,0,el).rotation.x=Math.PI/2);return {sh,el}});
+ const th=add(new T3.SphereGeometry(.075,10,8),mat(0xb87a30,.8,.2),0,-.47,0,arm[1].el);th.scale.y=.5;th.visible=false;
+ let lota=null,stream=null;
+ if(o.r==='l'){lota=add(new T3.CylinderGeometry(.05,.07,.12,10),go,0,2.15,-.28,g);const gm=new T3.BufferGeometry();gm.setAttribute('position',new T3.BufferAttribute(new Float32Array(42),3));stream=new T3.Points(gm,new T3.PointsMaterial({size:.07,map:glowT,color:0xfff0d0,blending:T3.AdditiveBlending,transparent:true,depthWrite:false}));stream.frustumCulled=false;g.add(stream);lota.visible=stream.visible=false}
+ sc.add(g);
+ const [bx,bz]=B[i],[gx,zf]=G[i],sd=i<4?-1:1,z0=bz+2.4+(i%3)*.6,x0=bx+sd*(15+(i%4)*1.5),tw=i*.25,sp=1.9;
+ const mt=new T3.Mesh(new T3.BoxGeometry(1.5,.04,1),mat(matCols[i%4],.95,.1));mt.position.set(bx,.52,bz);mt.scale.x=.001;sc.add(mt);
+ const t1a=tw+Math.abs(bx-x0)/sp,t1e=t1a+(z0-bz)/sp,T2=18+.2*i,l2=Math.hypot(gx-bx,zf-bz)/1.8,tB=T2+l2,tC=34+.2*i,tD=tC+l2,tE=tD+1.6;
+ const k=i>>1,mx=(B[2*k][0]+B[2*k+1][0])/2+(i%2?.55:-.55),mz=4.9,lm=Math.hypot(mx-bx,mz-bz)/1.3,tF=tE+lm,tG=tF+7,tH=tG+lm,tI=tH+2.2,ex=sd*42,ez=6.4+(i%3)*.7;
+ const kf=[[0,x0,z0],[tw,x0,z0],[t1a,bx,z0],[t1e,bx,bz],[T2,bx,bz],[tB,gx,zf],[tC,gx,zf],[tD,bx,bz],[tE,bx,bz],[tF,mx,mz],[tG,mx,mz],[tH,bx,bz],[tI,bx,bz],[tI+Math.hypot(ex-bx,ez-bz)/1.15,ex,ez]].map(a=>({t:a[0],x:a[1],z:a[2]}));
+ return Object.assign({g,body,arm,legs,lota,stream,th,i,kf,mt,bx,bz,t1e,T2,tB,tC,tD,tF,tG,tH,ry:sd<0?-Math.PI/2:Math.PI/2,ph:0,cr:o.r==='c'?1:0,bk:daura()},o)});
+const rings=people.map(()=>[0,1].map(()=>{const m=new T3.Mesh(new T3.RingGeometry(.9,1,32).rotateX(-Math.PI/2),new T3.MeshBasicMaterial({color:0xffe0b0,transparent:true,blending:T3.AdditiveBlending,depthWrite:false,fog:false}));sc.add(m);return m}));
+
+/* two-bone arm IK: hands go where the pose asks, elbows follow */
+const DN=V(0,-1,0),vS=V(),vD=V(),vP=V(),vE=V(),vU=V(),vF=V(),hv=V(),pole=V(),qI=new T3.Quaternion();
+function ik(a,s,H){vS.set(s*.23,1.5,0);vD.copy(H).sub(vS);const d=cl(vD.length(),.1,.699);vD.normalize();
+ const x=(d*d-.07)/(2*d),h=Math.sqrt(Math.max(0,.09-x*x));
+ pole.set(s*.6,-.6,.2);vP.copy(pole).addScaledVector(vD,-pole.dot(vD)).normalize();
+ vE.copy(vS).addScaledVector(vD,x).addScaledVector(vP,h);vU.copy(vE).sub(vS).normalize();vF.copy(vS).addScaledVector(vD,d).sub(vE).normalize();
+ a.sh.quaternion.setFromUnitVectors(DN,vU);qI.copy(a.sh.quaternion).invert();a.el.quaternion.setFromUnitVectors(DN,vF.applyQuaternion(qI))}
+function setArms(p,wc,wf,wl,wg,sw,T){let s=wc+wf+wl+wg;if(s>1){wc/=s;wf/=s;wl/=s;wg/=s;s=1}const w0=1-s;
+ p.arm.forEach((a,j)=>{const sd=j?1:-1;hv.set(sd*(.27*w0+.31*wc+.06*wl+.02*wf+.12*wg),1*w0+2.1*wc+2.1*wl+1.68*wf+1.35*wg,(-.1-sd*sw*.35)*w0-.26*wc-.3*wl-.3*wf-.55*wg);ik(a,sd,hv)})}
+
+function updPerson(p,T,dt,n){
+ const k=p.kf;let a=k[0],x=a.x,z=a.z,vel=0,hd=0;
+ if(T>a.t)for(let j=1;j<k.length;j++){const b=k[j],du=Math.max(1e-6,b.t-a.t);if(T<=b.t){const u=(T-a.t)/du,dx=b.x-a.x,dz=b.z-a.z;x=L(a.x,b.x,u);z=L(a.z,b.z,u);if(dx||dz){vel=Math.hypot(dx,dz)/du;hd=Math.atan2(-dx,-dz)}break}a=b;x=b.x;z=b.z}
+ const mv=vel>0,tg=mv?hd:(T>=p.tF&&T<p.tG?(p.i%2?Math.PI/2:-Math.PI/2):(T<p.T2?Math.sin(T*.6+p.i*2)*.6:0));
+ let d=tg-p.ry;d=Math.atan2(Math.sin(d),Math.cos(d));p.ry+=d*(1-Math.exp(-dt*(mv?8:5)));
+ p.ph+=vel*dt*3.4;const sw=Math.sin(p.ph)*Math.min(1,vel),bob=Math.abs(Math.sin(p.ph))*.04*Math.min(1,vel);
+ p.g.position.set(x,yAt(z)+bob+(mv?0:Math.sin(T*1.3+p.i)*.01),z);p.g.rotation.y=p.ry;
+ const st=(A,B2)=>S((T-A)/(B2-A)),bm=(A,w)=>st(A,A+.5)*(1-st(A+w,A+w+.5));
+ const cw=cl(1-st(p.t1e+.8,p.t1e+2)+p.cr*st(p.T2-1.8,p.T2-.4)-p.cr*st(p.tD+.4,p.tD+1.6)+st(p.tH+.4,p.tH+1.6));
+ const inW=st(p.tB+.2,p.tB+1.6)*(1-st(p.tC-.6,p.tC));
+ const wf=p.r==='f'?inW:0,wl=p.r==='l'?inW:0,wg=st(p.tF,p.tF+1)*(1-st(p.tG-.3,p.tG+.4))*(.75+.25*Math.sin(T*3+p.i));
+ p.body.rotation.x=-.6*Math.max(bm(p.t1e+.6,1.6),bm(p.T2-1.8,1.5),bm(p.tD+.2,1.6),bm(p.tH+.2,1.6));
+ setArms(p,cw,wf,wl,wg,sw,T);
+ p.legs.forEach((l,j)=>l.rotation.x=(j?-sw:sw)*.9);
+ p.th.visible=T>p.tD+1.2;
+ if(p.lota){const on=wl>.7;p.lota.visible=p.stream.visible=on;
+  if(on){const A=p.stream.geometry.attributes.position,wy=-p.g.position.y;
+   for(let q=0;q<14;q++){const u=(T*.9+q/14)%1,v=1-u;A.setXYZ(q,v*v*.05+2*v*u*.5+u*u*.95,v*v*2.2+2*v*u*2.25+u*u*wy,v*v*-.3+2*v*u*-.75+u*u*-1.1)}A.needsUpdate=true}}
+ const th=p.ry,hx=p.g.position.x-.26*Math.sin(th),hz=p.g.position.z-.26*Math.cos(th),hy=p.g.position.y+2.2;
+ p.bk.position.set(L(p.bx+.95,hx,cw),L(.53,hy,cw),L(p.bz+.15,hz,cw));p.bk.rotation.x=-.3*cw*inW;
+ p.mt.scale.x=Math.max(.001,st(p.t1e+.3,p.t1e+3));
+ const inWater=T>p.tB-.5&&T<p.tC+.5;
+ rings[n].forEach((m,j)=>{const q=(T*.35+j*.5)%1;m.visible=inWater;m.position.set(x,.04,z);m.scale.setScalar(.3+q*1.1);m.material.opacity=.45*(1-q)})}
+
+/* floating diyas + dust */
+const bowlG=new T3.SphereGeometry(.2,10,6,0,6.283,Math.PI/2,Math.PI/2),bowlM=mat(0xc76a2b,.8,.15);
+const diyas=[...Array(28)].map(()=>{const g=new T3.Group();g.add(new T3.Mesh(bowlG,bowlM));const z=-R(3,45),s=Math.min(1.4,1+(-z)*.018);glow(0xffb347,.9*s,0,.28,0,.95,g);glow(0xfff2c0,.35*s,0,.24,0,1,g);g.position.set(R(-40,40),0,z);g.scale.setScalar(s);sc.add(g);return {g,p:R(0,6),v:R(.1,.25)}});
+const dg=new T3.BufferGeometry(),dp=new Float32Array(300);for(let i=0;i<100;i++)dp.set([R(-20,20),R(.5,9),R(-12,16)],i*3);dg.setAttribute('position',new T3.BufferAttribute(dp,3));
+sc.add(Object.assign(new T3.Points(dg,new T3.PointsMaterial({size:.16,map:glowT,color:0xffd9a0,blending:T3.AdditiveBlending,transparent:true,depthWrite:false,opacity:.8})),{frustumCulled:false}));
+
+/* story chapters + camera */
+const CAP=[['सुबह की पहली रोशनी… घाट की ओर','Morning light · the walk to the ghat'],['घाट पर तैयारी: चटाई, सूप और दउरा','Preparing at the riverbank'],['सूर्य देव को अर्घ्य','Arghya, standing in the river'],['ठेकुआ का प्रसाद, मुस्कुराहटें और वापसी','Sharing thekua · returning home']];
+const CT=[0,10,18,34],cams=[{p:[0,2.6,15],l:[0,2,3]},{p:[1,2.5,12.8],l:[0,1.5,5.8]},{p:[.5,1.9,3.8],l:[0,2.2,-6]},{p:[0,2.4,15],l:[0,1.5,5.2]}];
+const dots=[...document.querySelectorAll('#dots span')],capEl=$('cap');
+let T=0,ch=-1,rvOn=false,END=57;
+function setCap(c){if(rvOn)return;capEl.style.opacity=0;setTimeout(()=>{if(rvOn)return;capEl.innerHTML='<b>'+CAP[c][0]+'</b><i>'+CAP[c][1]+'</i>';capEl.style.opacity=1},350);dots.forEach((d,i)=>d.classList.toggle('on',i==c))}
+function restart(t){T=t;ch=-1;rvOn=false;$('rv').classList.remove('on')}
+dots.forEach((d,i)=>d.addEventListener('click',e=>{e.stopPropagation();restart(CT[i]+.01)}));
+$('rv').addEventListener('click',()=>{if(T>END+4)restart(0)});
+$('hp').innerHTML='Happy Chhath Puja'.split('').map((c,i)=>`<span style="--i:${i}">${c==' '?'&nbsp;':c}</span>`).join('');
+function size(){const w=innerWidth,h=innerHeight,a=w/h;rd.setSize(w,h);cam.aspect=a;cam.fov=a<1?68:52;cam.updateProjectionMatrix();cams[1].p[2]=a<1?15:12.8;cams[2].p[2]=a<1?6:3.8;cams[3].p[2]=a<1?16:15}
+addEventListener('resize',size);size();
+let tx=0,ty=0,px=0,py=0;addEventListener('pointermove',e=>{tx=e.clientX/innerWidth*2-1;ty=e.clientY/innerHeight*2-1});addEventListener('pointerdown',()=>wake());
+
+/* devotional ambience (WebAudio, no files); tries to autoplay, starts on first tap if blocked */
+let ac,mg,muted=false;
+function audio(){if(ac)return;try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(e){return}
+ mg=ac.createGain();mg.gain.value=.9;mg.connect(ac.destination);
+ const d=ac.createDelay();d.delayTime.value=.4;const fb=ac.createGain();fb.gain.value=.45;d.connect(fb);fb.connect(d);d.connect(mg);const wet=ac.createGain();wet.gain.value=.5;wet.connect(d);
+ [[65.41,.4],[130.81,.5],[196,.35],[261.63,.22]].forEach(([f,v],i)=>{const o=ac.createOscillator(),g=ac.createGain(),l=ac.createOscillator(),lg=ac.createGain();o.type=i?'sine':'triangle';o.frequency.value=f;o.detune.value=i*2-3;g.gain.value=v*.16;l.frequency.value=.15+i*.07;lg.gain.value=v*.07;l.connect(lg);lg.connect(g.gain);o.connect(g);g.connect(mg);g.connect(wet);o.start();l.start()});
+ const nt=[261.63,293.66,329.63,392,440,523.25,587.33,659.25];
+ setInterval(()=>{if(muted||ac.state!=='running')return;[nt[Math.random()*8|0],Math.random()<.3?nt[Math.random()*8|0]:0].forEach(f=>{if(!f)return;const o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime;o.frequency.value=f;g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(.09,n+.02);g.gain.exponentialRampToValueAtTime(.0005,n+2.6);o.connect(g);g.connect(mg);g.connect(wet);o.start(n);o.stop(n+2.8)})},1900)}
+function wake(){audio();if(ac&&ac.state==='suspended')ac.resume()}
+audio();if(ac)ac.resume().catch(()=>{});
+['keydown','touchend','click'].forEach(ev=>addEventListener(ev,wake));
+$('snd').addEventListener('click',e=>{e.stopPropagation();wake();muted=!muted;$('snd').classList.toggle('off',muted);if(mg)mg.gain.linearRampToValueAtTime(muted?0:.9,ac.currentTime+.6)});
+
+/* main loop */
+const look=V();let last=performance.now();
+function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;
+ const c=T<CT[1]?0:T<CT[2]?1:T<CT[3]?2:3;if(c!==ch){ch=c;setCap(c)}
+ if(T>=END&&!rvOn){rvOn=true;capEl.style.opacity=0;$('rv').classList.add('on')}
+ const sy=L(2.6,8.6,S(T/45));SUN.y=sy;sunM.position.y=g1.position.y=g2.position.y=sy;sunDir.copy(SUN).normalize();dl.position.copy(sunDir).multiplyScalar(50);
+ water.material.uniforms.t.value=T;
+ people.forEach((p,n)=>updPerson(p,T,dt,n));
+ diyas.forEach(d=>{d.g.position.x+=d.v*dt;if(d.g.position.x>45)d.g.position.x=-45;d.g.position.y=Math.sin(T*1.3+d.p)*.05});
+ const A=dg.attributes.position;for(let i=0;i<100;i++){let y=dp[i*3+1]+dt*.12;if(y>9)y=.5;dp[i*3+1]=y;dp[i*3]+=Math.sin(T*.5+i)*dt*.1}A.needsUpdate=true;
+ const k0=cams[Math.max(0,c-1)],k1=cams[c],kk=c?S((T-CT[c])/3.5):1;
+ px=L(px,tx,.04);py=L(py,ty,.04);
+ const pk=[0,1,2].map(i=>L(k0.p[i],k1.p[i],kk)),lk=[0,1,2].map(i=>L(k0.l[i],k1.l[i],kk));
+ if(c==3){const pn=Math.sin((T-34)*.15)*(innerWidth<innerHeight?4:2.5);pk[0]+=pn;lk[0]+=pn}
+ cam.position.set(pk[0]+px*.9,pk[1]+Math.sin(T*.4)*.05-py*.3,pk[2]);look.set(lk[0]+px*1.5,lk[1]-py*.4,lk[2]);cam.lookAt(look);
+ rd.render(sc,cam)}
+requestAnimationFrame(loop);
+}
+</script>
+</body>
+</html>
